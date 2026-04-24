@@ -1,0 +1,34 @@
+name: Build Calculator JAR
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Compile Java
+        run: javac Calculator.java
+
+      - name: Create executable JAR
+        run: |
+          echo "Main-Class: Calculator" > manifest.txt
+          jar cfm calculator.jar manifest.txt *.class
+
+      - name: Upload JAR as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: calculator-jar
+          path: calculator.jar
